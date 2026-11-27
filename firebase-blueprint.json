@@ -1,0 +1,142 @@
+{
+  "entities": {
+    "ExamProgress": {
+      "title": "ExamProgress",
+      "description": "In-progress or latest saved state for the 50-question Grade X English UAS exam, synced offline and online.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID."
+        },
+        "examId": {
+          "type": "string",
+          "description": "Identifier of the exam (uas_ganjil_2026)."
+        },
+        "studentName": {
+          "type": "string",
+          "description": "Student name entered on the exam cover."
+        },
+        "studentNumber": {
+          "type": "string",
+          "description": "Student attendance/absen number."
+        },
+        "answers": {
+          "type": "array",
+          "description": "Fixed 50-element list of selected options ('', 'a', 'b', 'c', or 'd')."
+        },
+        "flaggedQuestions": {
+          "type": "array",
+          "description": "List of 1-based question numbers marked ragu-ragu / flagged."
+        },
+        "currentQuestion": {
+          "type": "integer",
+          "description": "1-based index of the currently active question (1..50)."
+        },
+        "remainingSeconds": {
+          "type": "integer",
+          "description": "Remaining exam timer in seconds (0..5400)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["in_progress", "completed"],
+          "description": "Current status of the active exam session."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when session was created (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when session was last updated (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "userId",
+        "examId",
+        "studentName",
+        "studentNumber",
+        "answers",
+        "flaggedQuestions",
+        "currentQuestion",
+        "remainingSeconds",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ExamAttempt": {
+      "title": "ExamAttempt",
+      "description": "Immutable completed submission record for the 50-question Grade X English UAS exam.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID."
+        },
+        "examId": {
+          "type": "string",
+          "description": "Identifier of the exam (uas_ganjil_2026)."
+        },
+        "studentName": {
+          "type": "string",
+          "description": "Student name at submission time."
+        },
+        "studentNumber": {
+          "type": "string",
+          "description": "Student attendance/absen number at submission time."
+        },
+        "answers": {
+          "type": "array",
+          "description": "Fixed 50-element list of submitted answers."
+        },
+        "correctCount": {
+          "type": "integer",
+          "description": "Total number of correct answers out of 50."
+        },
+        "score": {
+          "type": "integer",
+          "description": "Final score (correctCount * 2, max 100)."
+        },
+        "durationSeconds": {
+          "type": "integer",
+          "description": "Time spent completing the exam in seconds."
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when exam was submitted (FieldValue.serverTimestamp())."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when attempt record was created (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "userId",
+        "examId",
+        "studentName",
+        "studentNumber",
+        "answers",
+        "correctCount",
+        "score",
+        "durationSeconds",
+        "completedAt",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/exam_progress/{progressId}": {
+      "schema": { "$ref": "#/entities/ExamProgress" },
+      "description": "User-scoped live exam draft progress for cross-device cloud sync and offline persistence."
+    },
+    "/users/{userId}/exam_attempts/{attemptId}": {
+      "schema": { "$ref": "#/entities/ExamAttempt" },
+      "description": "User-scoped history of completed exam submissions and scores."
+    }
+  }
+}

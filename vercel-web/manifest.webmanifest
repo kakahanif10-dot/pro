@@ -1,0 +1,19 @@
+{
+  "name": "UAS Bahasa Inggris Kelas X",
+  "short_name": "UAS Inggris X",
+  "description": "Aplikasi ujian siswa 50 soal pilihan ganda UAS Bahasa Inggris Kelas X dengan skor otomatis, rekap jawaban, mode offline, dan sinkronisasi cloud.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8FBFF",
+  "theme_color": "#2563EB",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

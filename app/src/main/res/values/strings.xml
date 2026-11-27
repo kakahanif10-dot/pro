@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">UAS Inggris X</string>
+    <string name="exam_title">UJIAN AKHIR SEMESTER (UAS) GANJIL</string>
+    <string name="exam_year">TAHUN PELAJARAN 2026/2027</string>
+    <string name="exam_subject">Bahasa Inggris</string>
+    <string name="exam_grade">X / E</string>
+    <string name="exam_format">Pilihan ganda (50 soal)</string>
+    <string name="exam_duration">90 menit</string>
+    <string name="sign_in_google">Masuk dengan Google</string>
+    <string name="sign_out">Keluar</string>
+    <string name="cd_app_logo">Logo UAS Bahasa Inggris Kelas X</string>
+    <string name="cd_sync_status">Status sinkronisasi cloud dan mode offline</string>
+    <string name="cd_question_grid">Buka daftar seluruh 50 soal</string>
+    <string name="cd_flag_question">Tandai soal sebagai ragu-ragu</string>
+</resources>

@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidExamProgress(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.examId is string && data.examId.size() >= 1 && data.examId.size() <= 64 &&
+             data.studentName is string && data.studentName.size() <= 80 &&
+             data.studentNumber is string && data.studentNumber.size() <= 30 &&
+             data.answers is list && data.answers.size() == 50 && data.answers[0] is string &&
+             data.flaggedQuestions is list && data.flaggedQuestions.size() <= 50 &&
+             (data.flaggedQuestions.size() == 0 || data.flaggedQuestions[0] is int) &&
+             data.currentQuestion is int && data.currentQuestion >= 1 && data.currentQuestion <= 50 &&
+             data.remainingSeconds is int && data.remainingSeconds >= 0 && data.remainingSeconds <= 5400 &&
+             data.status is string && data.status in ['in_progress', 'completed'] &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidExamAttempt(data, userId) {
+      return data.userId is string && data.userId == userId &&
+             data.examId is string && data.examId.size() >= 1 && data.examId.size() <= 64 &&
+             data.studentName is string && data.studentName.size() >= 1 && data.studentName.size() <= 80 &&
+             data.studentNumber is string && data.studentNumber.size() <= 30 &&
+             data.answers is list && data.answers.size() == 50 && data.answers[0] is string &&
+             data.correctCount is int && data.correctCount >= 0 && data.correctCount <= 50 &&
+             data.score is int && data.score >= 0 && data.score <= 100 &&
+             data.score == data.correctCount * 2 &&
+             data.durationSeconds is int && data.durationSeconds >= 0 && data.durationSeconds <= 5400 &&
+             data.completedAt is timestamp && data.completedAt <= request.time &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    match /users/{userId}/exam_progress/{progressId} {
+      allow get: if isOwner(userId) && isValidId(progressId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(progressId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'examId', 'studentName', 'studentNumber',
+                         'answers', 'flaggedQuestions', 'currentQuestion',
+                         'remainingSeconds', 'status', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'examId', 'studentName', 'studentNumber',
+                         'answers', 'flaggedQuestions', 'currentQuestion',
+                         'remainingSeconds', 'status', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidExamProgress(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(progressId) &&
+                       isValidExamProgress(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().examId == existing().examId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'studentName', 'studentNumber', 'answers',
+                         'flaggedQuestions', 'currentQuestion',
+                         'remainingSeconds', 'status', 'updatedAt'
+                       ]);
+
+      allow delete: if isOwner(userId) && isValidId(progressId);
+    }
+
+    match /users/{userId}/exam_attempts/{attemptId} {
+      allow get: if isOwner(userId) && isValidId(attemptId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(attemptId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'examId', 'studentName', 'studentNumber',
+                         'answers', 'correctCount', 'score', 'durationSeconds',
+                         'completedAt', 'createdAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'examId', 'studentName', 'studentNumber',
+                         'answers', 'correctCount', 'score', 'durationSeconds',
+                         'completedAt', 'createdAt'
+                       ]) &&
+                       isValidExamAttempt(incoming(), userId);
+
+      allow update: if false;
+      allow delete: if isOwner(userId) && isValidId(attemptId);
+    }
+  }
+}

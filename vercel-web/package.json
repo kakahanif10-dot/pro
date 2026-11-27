@@ -1,0 +1,9 @@
+{
+  "name": "uas-inggris-x-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mobile Web PWA Ujian Akhir Semester Bahasa Inggris Kelas X (50 Soal) dengan mode offline dan cache browser, siap deploy ke Vercel tanpa backend/API.",
+  "scripts": {
+    "build": "echo Static PWA ready for Vercel"
+  }
+}

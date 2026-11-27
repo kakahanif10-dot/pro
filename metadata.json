@@ -1,0 +1,6 @@
+{
+  "name": "UAS Inggris X",
+  "description": "Aplikasi ujian pilihan ganda Bahasa Inggris Kelas X (50 soal) sesuai PDF dengan kunci jawaban, pembahasan, skor otomatis, mode offline, dan sinkronisasi progres cloud.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
